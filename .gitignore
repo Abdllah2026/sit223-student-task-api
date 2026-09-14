@@ -1,0 +1,4 @@
+node_modules/
+deployed-app/
+release-version.txt
+*.tgz
