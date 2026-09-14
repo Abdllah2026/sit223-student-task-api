@@ -6,8 +6,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Installing dependencies and creating build artifact...'
-                bat 'npm ci'
-                bat 'npm pack'
+                sh 'npm ci'
+                sh 'npm pack'
                 archiveArtifacts artifacts: '*.tgz', fingerprint: true
             }
         }
@@ -15,33 +15,33 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running automated tests...'
-                bat 'npm test'
+                sh 'npm test'
             }
         }
 
         stage('Code Quality') {
             steps {
                 echo 'Running ESLint code quality check...'
-                bat 'npx eslint app.js app.test.js'
+                sh 'npx eslint app.js app.test.js'
             }
         }
 
         stage('Security') {
             steps {
                 echo 'Running npm security audit...'
-                bat 'npm audit --audit-level=high'
+                sh 'npm audit --audit-level=high'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying application to local deployment folder...'
-                bat '''
-                if exist deployed-app rmdir /s /q deployed-app
-                mkdir deployed-app
-                copy app.js deployed-app\\app.js
-                copy package.json deployed-app\\package.json
-                copy package-lock.json deployed-app\\package-lock.json
+                sh '''
+                    rm -rf deployed-app
+                    mkdir -p deployed-app
+                    cp app.js deployed-app/app.js
+                    cp package.json deployed-app/package.json
+                    cp package-lock.json deployed-app/package-lock.json
                 '''
             }
         }
@@ -49,8 +49,8 @@ pipeline {
         stage('Release') {
             steps {
                 echo 'Creating release version...'
-                bat 'echo Release version 1.0.%BUILD_NUMBER% > release-version.txt'
-                bat 'type release-version.txt'
+                sh 'echo "Release version 1.0.${BUILD_NUMBER}" > release-version.txt'
+                sh 'cat release-version.txt'
                 archiveArtifacts artifacts: 'release-version.txt', fingerprint: true
             }
         }
@@ -58,7 +58,7 @@ pipeline {
         stage('Monitoring') {
             steps {
                 echo 'Running application health-check test...'
-                bat 'npm test -- --runTestsByPath app.test.js'
+                sh 'npm test -- --runTestsByPath app.test.js'
             }
         }
     }
