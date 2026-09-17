@@ -1,20 +1,30 @@
 {
   "name": "sit223-student-task-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "SIT223 Student Task API with CRUD functionality and Jenkins DevOps pipeline",
+  "main": "app.js",
   "scripts": {
-    "test": "jest"
+    "start": "node app.js",
+    "build": "npm pack",
+    "test": "jest",
+    "lint": "eslint app.js app.test.js --max-warnings=0",
+    "security": "npm audit --audit-level=high"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "sit223",
+    "devops",
+    "jenkins",
+    "nodejs",
+    "api"
+  ],
+  "author": "Abdullah Albelady",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "eslint": "^10.10.0",
+    "eslint": "^9.39.1",
     "jest": "^30.5.1",
     "supertest": "^7.2.2"
   }

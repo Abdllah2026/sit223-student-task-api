@@ -1,0 +1,7 @@
+node_modules
+deployed-app
+.git
+.gitignore
+Jenkinsfile
+*.tgz
+coverage
