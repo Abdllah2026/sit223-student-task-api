@@ -1,0 +1,20 @@
+groups:
+  - name: sit223-alerts
+    rules:
+      - alert: SIT223ApplicationDown
+        expr: up{job="sit223-production"} == 0
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "SIT223 production application is down"
+          description: "Prometheus cannot reach the SIT223 production application."
+
+      - alert: SIT223HighRequestRate
+        expr: rate(http_requests_total{job="sit223-production"}[1m]) > 10
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request rate detected"
+          description: "The SIT223 API is receiving a high number of requests."

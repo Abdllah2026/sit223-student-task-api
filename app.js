@@ -1,9 +1,33 @@
 const express = require('express');
+const client = require('@prometheus-io/client');
 
 const app = express();
 const PORT = 3000;
 
+// Prometheus default metrics
+client.collectDefaultMetrics();
+
+// Custom request counter
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status']
+});
+
 app.use(express.json());
+
+// Count HTTP requests
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.path,
+      status: String(res.statusCode)
+    });
+  });
+
+  next();
+});
 
 let tasks = [
   {
@@ -36,6 +60,12 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
 // Get all tasks
 app.get('/api/tasks', (req, res) => {
   res.json(tasks);
@@ -52,7 +82,9 @@ app.post('/api/tasks', (req, res) => {
   }
 
   const newTask = {
-    id: tasks.length > 0 ? Math.max(...tasks.map(task => task.id)) + 1 : 1,
+    id: tasks.length > 0
+      ? Math.max(...tasks.map(task => task.id)) + 1
+      : 1,
     title,
     completed: false
   };
