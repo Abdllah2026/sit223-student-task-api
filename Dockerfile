@@ -4,9 +4,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 COPY app.js ./
+
+RUN chown -R node:node /app
+
+USER node
 
 EXPOSE 3000
 
